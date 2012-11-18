@@ -1,0 +1,75 @@
+.main {
+    margin: 50px auto;
+    width: 600px;
+}
+
+.navigation {
+    overflow: hidden;
+    margin:0 20px;
+}
+
+.navigation li {
+    float: left;
+    margin-left:5px;
+    width:100px;
+    height:30px;
+}
+
+.navigation li a {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.container {
+    margin-top: 1px;
+    padding: 20px;
+    border-width: 2px;
+    border-style: solid;
+    border-radius: 10px;
+    font-size: 12px;
+}
+
+.box_account form {
+    height: 100%;
+    display: -webkit-box;
+    display: box;
+    box-orient: horizontal;
+}
+
+.box_account form > div {
+    -webkit-box-flex: 1;
+    box-flex: 1;
+}
+
+.box_account label, .box_account input{
+    display: table-cell;
+    width: 97%;
+    height: 22px;
+    line-height:22px;
+}
+
+.login {
+    border-right: 2px dotted #CCC;
+    padding-right: 3%;
+}
+
+.signup {
+    padding-left: 3%;
+}
+
+.tips {
+    display: block;
+    line-height:22px;
+}
+
+.signup_submit, .login_submit {
+    margin: 10px auto;
+}
+
+.wrong {
+    border-color: red;
+}
+
+.grey {
+    color: #CCC;
+}

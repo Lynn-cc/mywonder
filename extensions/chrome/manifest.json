@@ -1,0 +1,21 @@
+{
+  "name": "Wondermarks",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "The first extension that I made.",
+  "browser_action": {
+    "default_icon": "image/icon.png",
+    "default_popup": "popup.html"
+  },
+  "options_page": "options.html",
+  "background": {
+    "page": "background.html"
+  },
+  "permissions": [
+    "http://thewonder.me/",
+    "http://127.0.0.1/",
+    "bookmarks",
+    "storage"
+  ]
+}
+

@@ -1,0 +1,48 @@
+body, ul, li {
+  margin: 0px;
+  padding: 0px;
+}
+
+li {
+  list-style: none;
+}
+
+.colorBtn {
+    display: block;
+    width: 100px;
+    height: 30px;
+    font: 14px 'Microsoft Yahei';
+    text-align: center;
+    text-decoration: none;
+    line-height:30px;
+    color: white;
+    border-radius: 5px;
+}
+
+.colorBtn:hover {
+    background-color: #CCC;
+}
+
+.orange {
+    background-color: #EF8200;
+}
+
+.orange_border {
+    border-color: #EF8200;
+}
+
+.blue {
+    background-color: #29B4F0;
+}
+
+.blue_border {
+    border-color: #29B4F0;
+}
+
+.green {
+    background-color: #6FC448;
+}
+
+.green_border {
+    border-color: #6FC448;
+}

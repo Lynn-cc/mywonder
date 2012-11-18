@@ -1,0 +1,12 @@
+ul {
+  margin: 8px auto;
+}
+
+li {
+  padding: 5px 10px;
+}
+
+.waiting {
+    background:#CCC url(../image/waiting.gif) 10px 60% no-repeat;
+    cursor:default;
+}
