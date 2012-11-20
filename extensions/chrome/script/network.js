@@ -20,8 +20,6 @@ window.network = new (function() {
             data: {
                 email: email,
                 password: password,
-                platform: navigator.platfrom || '',
-                appName: navigator.appName || ''
             },
             headers: {
                 'X-Wonder-User-Agent': _ua
@@ -40,9 +38,6 @@ window.network = new (function() {
             data: {
                 email: email,
                 password: password,
-                platform: navigator.platfrom || '',
-                appName: navigator.appName || ''
-
             },
             headers: {
                 'X-Wonder-User-Agent': _ua
