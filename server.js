@@ -6,7 +6,7 @@
 
 var express = require('express'),
 app = express(),
-db = require('./db.js'),
+db = require('./db.js').db,
 handlers = require('./handlers.js');
 
 db.open(function(err, db) {
@@ -26,13 +26,11 @@ app.post('/signup', function(req, res) {
 
     handlers.signup(req, function(err, results) {
         if (err) {
-            console.log(err);
             res.json(500, results);
+            console.log('response status code 500');
         } else {
             res.json(200, results);
             console.log('sended response of /signup')
         }
     });
 });
-
-

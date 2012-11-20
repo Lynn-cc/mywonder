@@ -1,4 +1,4 @@
-var db = require('./db.js'),
+var db = require('./db.js').db,
 errStr = ['', 'INVALID_INPUTS', 'EMAIL_ALREADY_EXIST'],
 serverErrObj = {
     code: -1,
@@ -18,16 +18,15 @@ exports.signup = function(req, callback) {
         db.collection('user', function(err, collection) {
             console.log('open collection, start inserting');
 
-            var code = 0,
-            uid = 0,
-            test;
+            var test;
 
             if (err) { throw err; }
 
             test = testing(userObj);
 
             if (!test) {
-                code = 1;
+                response({ code: 1 });
+
             } else {
 
                 collection.find({
@@ -36,25 +35,23 @@ exports.signup = function(req, callback) {
 
                     if (item.length) {
                         console.log('user is already exits');
-                        code = 2;
+                        response({ code : 2 });
+
                     } else {
                         userObj.uid = buildUid(body['email']);
 
                         collection.insert(userObj, function(err, results) {
                             if (err) { throw err; }
 
+                            response({
+                                code: 0,
+                                uid: userObj.uid
+                            });
                             console.log('user has been saved')
-                            uid = userObj.uid;
                         });
                     }
                 });
             }
-
-            callback('', {
-                code: code,
-                reason: errStr[code],
-                uid: userObj.uid || ''
-            });
 
         });
 
@@ -62,9 +59,24 @@ exports.signup = function(req, callback) {
         console.log(e);
         callback(e, serverErrObj);
     }
+
+    function response(obj) {
+        callback('', {
+            code: obj.code,
+            reason: errStr[obj.code],
+            uid: obj.uid || ''
+        });
+    }
+
 };
 
 function testing(userObj) {
+    var regular = /[a-zA-Z0-9_\.\-]+@([a-zA-Z0-9]+\.)+[a-z]{2,4}/;
+    if (userObj.password.length < 20)
+        return false;
+    if (!userObj.mail.match(regular))
+        return false;
+
     return true;
 }
 
@@ -72,7 +84,6 @@ function buildUid(email) {
     var date = new Date(),
     random = Math.random();
 
-    var str = date.getTime() + Math.floor(random * 10e4);
-
-    return 
+    return date.getTime() + email + Math.floor(random * 10e4);
 }
+

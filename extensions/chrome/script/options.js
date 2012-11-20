@@ -1,9 +1,9 @@
 /*
-* Name: options.js
-* Description: Javascript file for the option page
-* Environment: All broswer
-* Version: 0.1
-*/
+ * Name: options.js
+ * Description: Javascript file for the option page
+ * Environment: All broswer
+ * Version: 0.1
+ */
 
 (function() {
 
@@ -56,14 +56,14 @@
             emailRegular = /[a-zA-Z0-9_\.\-]+@([a-zA-Z0-9]+\.)+[a-z]{2,4}/,
 
             emailCheck = email.match(emailRegular) &&
-                         emailLength < EMAIL_MAX_LENGTH;
+                emailLength < EMAIL_MAX_LENGTH;
 
             var $password = el.find('.password'),
             passwordLength = $password.attr('value').length,
 
             passwordCheck = passwordLength >= PASSWORD_MIN_LENGTH &&
-                            passwordLength <= PASSWORD_MAX_LENGTH &&
-                            !$password.hasClass('grey');
+                passwordLength <= PASSWORD_MAX_LENGTH &&
+                !$password.hasClass('grey');
 
             if (!emailCheck) {
                 this.wrongValue($email);
@@ -84,7 +84,7 @@
             var $el = $('.signup .password'),
             $writeInput = $('<input type="password" class="password" />'),
             $promptInput = $('<input type="text" class="password grey" ' +
-                'value="请设置长度4到20位密码" />');
+                             'value="请设置长度4到20位密码" />');
 
             if (status) {
                 $el.replaceWith($promptInput);
@@ -211,6 +211,7 @@
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
                     alert(textStatus + ':' + errorThrown);
+                    global.sendStatus = 0;
                 }
             });
         },
@@ -232,6 +233,8 @@
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
                     alert(textStatus + ':' + errorThrown);
+
+                    global.sendStatus = 0;
                 }
             });
         },
@@ -247,3 +250,4 @@
     };
 
 })();
+
