@@ -1,8 +1,8 @@
-
-crypto = require('crypto'),
-fs = require('fs'),
-pem = fs.readFileSync('server.pem'),
-key = pem.toString('ascii'),
+var crypto = require('crypto'),
+db = require('./db.js').db,
+//fs = require('fs'),
+//pem = fs.readFileSync('server.pem'),
+//key = pem.toString('ascii'),
 
 errStr = ['', 'INVALID_INPUTS', 'EMAIL_ALREADY_EXIST', 'EMAIL_NOT_EXIST', 'WRONG_PASSWORD'],
 serverErrObj = {
@@ -144,8 +144,9 @@ function buildUid() {
 }
 
 function encrypt(pw) {
-    var hmac = crypto.createHmac('sha1', key);
+    var hmac = crypto.createHash('sha256');
     hmac.update(pw);
     return hmac.digest('hex');
 }
+
 
