@@ -1,5 +1,8 @@
 var crypto = require('crypto'),
 db = require('./db.js').db,
+log = require('./log.js').log,
+logType = require('./log.js').types,
+
 //fs = require('fs'),
 //pem = fs.readFileSync('server.pem'),
 //key = pem.toString('ascii'),
@@ -18,7 +21,7 @@ exports.signup = function(req, cb) {
     if (handlerData(req, cb)) {
         try {
             db.collection('user', function(err, collection) {
-                console.log('open collection, start inserting');
+                log('open collection, start inserting');
 
                 if (err) { throw err; }
 
@@ -29,7 +32,8 @@ exports.signup = function(req, cb) {
                     if (err) { throw err; }
 
                     if (item.length) {
-                        console.log('user is already exits');
+                        log(logType.WARNING,
+                            'user is already exits: ' + userObj.email);
                         response({ code : 2 });
 
                     } else {
@@ -43,14 +47,14 @@ exports.signup = function(req, cb) {
                                 code: 0,
                                 uid: userObj.uid
                             });
-                            console.log('user has been saved');
+                            log('user has been saved: ' + userObj.email);
                         });
                     }
                 });
             });
 
         } catch (e) {
-            console.log(e);
+            log(logType.ERROR, e);
             callback(e, serverErrObj);
         }
     } else {
@@ -62,7 +66,7 @@ exports.login = function(req, cb) {
     if (handlerData(req, cb)) {
         try {
             db.collection('user', function(err, collection) {
-                console.log('open collection, start login');
+                log('open collection, start login');
 
                 if (err) { throw err; }
 
@@ -74,24 +78,25 @@ exports.login = function(req, cb) {
 
                     if (item.length) {
                         if (encrypt(userObj.password) === item[0].password) {
-                            console.log('login success');
+                            log('login success' + item[0].email);
                             response({
                                 code: 0,
                                 uid: item[0].uid
                             });
                         } else {
-                            console.log('wrong password');
+                            log(logType.WARNING,
+                                'wrong password:' + item[0].email);
                             response({ code: 4 });
                         }
                     } else {
-                        console.log('user not exist');
+                        log(logType.WARNING, 'user not exist:' + userObj.email);
                         response({ code : 3 });
                     }
                 });
             });
 
         } catch (e) {
-            console.log(e);
+            log(logType.ERROR, e);
             callback(e, serverErrObj);
         }
     } else {
@@ -99,6 +104,7 @@ exports.login = function(req, cb) {
     }
 };
 
+// 初始化用户参数并校验
 function handlerData(req, cb) {
     var body = req.body,
     headers = req.headers;
@@ -114,6 +120,7 @@ function handlerData(req, cb) {
     return testing();
 }
 
+// 正常200返回
 function response(obj) {
     callback('', {
         code: obj.code,
@@ -122,9 +129,10 @@ function response(obj) {
     });
 }
 
+// 校验用户参数
 function testing() {
     var regular = /[a-zA-Z0-9_\.\-]+@([a-zA-Z0-9]+\.)+[a-z]{2,4}/;
-    if (userObj.password.length > 20 || userObj.password.length < 3)
+    if (userObj.password.length > 20 || userObj.password.length < 5)
         return false;
     if (!userObj.email.match(regular))
         return false;
@@ -132,6 +140,7 @@ function testing() {
     return true;
 }
 
+// 生成用户id
 function buildUid() {
     var totalLength = 16,
     dateStr = new Date().getTime().toString(16),
@@ -143,10 +152,9 @@ function buildUid() {
     return dateStr + randomStr;
 }
 
+// 加密
 function encrypt(pw) {
     var hmac = crypto.createHash('sha256');
     hmac.update(pw);
     return hmac.digest('hex');
 }
-
-
