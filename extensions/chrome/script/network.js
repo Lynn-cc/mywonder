@@ -49,6 +49,24 @@ window.network = new (function() {
         });
     };
 
+    this.logout = function(uid, uniqueCode, callbacks) {
+        $.ajax({
+            url: _path.root + _path.logout,
+            type: 'POST',
+            data: {
+                uid: uid,
+                uniqueCode: uniqueCode
+            },
+            headers: {
+                'X-Wonder-User-Agent': _ua
+            },
+            dataType: 'json',
+            timeout: 10000,
+            success: callbacks.success,
+            error: callbacks.error
+        });
+    }
+
     function _userAgent() {
         var ua = navigator.userAgent.toLowerCase(),
         appName = getAppName();
