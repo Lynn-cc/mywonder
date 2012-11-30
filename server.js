@@ -1,8 +1,3 @@
-/** todo
- * log file
- * 防注入？
- **/
-
 var express = require('express'),
 app = express(),
 db = require('./db.js').db,
@@ -49,4 +44,5 @@ app.post('/login', function(req, res) {
         }
     });
 });
+
 

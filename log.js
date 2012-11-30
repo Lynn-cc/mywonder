@@ -36,3 +36,4 @@ function getTime() {
 function to2(num) {
     return num > 9 ? num : '0' + num;
 }
+
