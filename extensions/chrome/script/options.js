@@ -19,12 +19,11 @@
     });
 
     userInfo.get(null, function(obj) {
+        global.initForm();
         if (obj && obj.uid) {
-            global.initAccount();
             global.switchLoginStatus(obj.email);
         } else {
-            global.initForm();
-            global.switchLoginStatus();
+            global.switchLoginStatus(null);
         }
     });
 
@@ -34,9 +33,6 @@
             for (var key in this.bindEvent) {
                 this.bindEvent[key]();
             }
-        },
-        initAccount: function() {
-            this.bindEvent.logout(1);
         },
         reset: function() { // 重置表单
             var that = this;
@@ -177,14 +173,10 @@
                     }
                 });
             },
-            logout: function(needInitForm) {
+            logout: function() {
                 // 退出登陆
                 $('.logout').click(function() {
-                    global.switchLoginStatus();
-                    userInfo.clear();
-                    if (needInitForm) {
-                        global.initForm();
-                    }
+                    global.logout();
                 });
             }
         },
@@ -195,13 +187,10 @@
                         alert('注册成功');
                         userInfo.set({
                             uid: data.uid,
-                            email: email
+                            email: email,
+                            UniqueCode: data.uniqueCode
                         }, function() {
                             global.reset();
-                            userInfo.set({
-                                uid: data.uid,
-                                email: email
-                            });
                             global.switchLoginStatus(email);
                         });
                     } else {
@@ -223,7 +212,8 @@
                         global.reset();
                         userInfo.set({
                             uid: data.uid,
-                            email: email
+                            email: email,
+                            UniqueCode: data.uniqueCode
                         });
                         global.switchLoginStatus(email);
                     } else {
@@ -236,6 +226,20 @@
 
                     global.sendStatus = 0;
                 }
+            });
+        },
+        logout: function() {
+            userInfo.get(null, function(obj) {
+                logout(obj.uid, obj.uniqueCode, {
+                    success: function() {
+                        userInfo.clear();
+                        alert('注销成功');
+                        global.switchLoginStatus(null);
+                    },
+                    error: function() {
+                        alert('注销失败');
+                    }
+                });
             });
         },
         switchLoginStatus: function(email) { // 切换登陆态显示效果:登陆传入email,登出无参数
