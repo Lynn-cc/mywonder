@@ -1,26 +1,24 @@
 /**
-* Name: network.js
-* Description: Defined interfaces for common network operation
-* Environment: All Broswer
-* Version: 0.1
-*/
+ * Name: network.js
+ * Description: Defined interfaces for common network operation
+ * Environment: All Broswer
+ * Version: 0.1
+ */
 
 window.network = new (function() {
     var _path = {
-        root: "http://127.0.0.1:8888",
-        login: "/login",
-        signup: "/signup"
+        root: 'http://127.0.0.1:8888',
+        login: '/login',
+        signup: '/signup',
+        logout: '/logout'
     },
     _ua = _userAgent();
 
-    this.login = function(email, password, callbacks) {
+    this.login = function(data, callbacks) {
         $.ajax({
             type: 'POST',
             url: _path.root + _path.login,
-            data: {
-                email: email,
-                password: password,
-            },
+            data: data,
             headers: {
                 'X-Wonder-User-Agent': _ua
             },
@@ -31,14 +29,11 @@ window.network = new (function() {
         });
     };
 
-    this.signup = function(email, password, callbacks) {
+    this.signup = function(data, callbacks) {
         $.ajax({
             url: _path.root + _path.signup,
             type: 'POST',
-            data: {
-                email: email,
-                password: password,
-            },
+            data: data,
             headers: {
                 'X-Wonder-User-Agent': _ua
             },
@@ -49,14 +44,11 @@ window.network = new (function() {
         });
     };
 
-    this.logout = function(uid, uniqueCode, callbacks) {
+    this.logout = function(data, callbacks) {
         $.ajax({
             url: _path.root + _path.logout,
             type: 'POST',
-            data: {
-                uid: uid,
-                uniqueCode: uniqueCode
-            },
+            data: data, 
             headers: {
                 'X-Wonder-User-Agent': _ua
             },
@@ -83,4 +75,5 @@ window.network = new (function() {
         return 'Other' + '/' + appName;
     }
 
-    })();
+})();
+

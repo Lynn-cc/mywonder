@@ -45,4 +45,18 @@ app.post('/login', function(req, res) {
     });
 });
 
+app.post('/logout', function(req, res) {
+    log('accepted request of /logout');
+
+    handlers.logout(req, function(err, results) {
+        if (err) {
+            res.json(500, results);
+            log('response status code 500');
+        } else {
+            res.json(200, results);
+            log('sended response of /logout')
+        }
+    });
+});
+
 

@@ -1,15 +1,16 @@
 var crypto = require('crypto'),
-    db = require('./db.js').db,
-    log = require('./log.js').log,
-    logType = require('./log.js').types,
+db = require('./db.js').db,
+log = require('./log.js').log,
+logType = require('./log.js').types,
 
-    ERROR_DESCRIPTIONS = ['', 'INVALID_INPUTS', 'EMAIL_ALREADY_EXIST',
-              'EMAIL_NOT_EXIST', 'WRONG_PASSWORD'
-    ],
-    serverErrObj = {
-        code: -1,
-        reason: 'SERVER_ERROR'
-    };
+ERROR_DESCRIPTIONS = ['', 'INVALID_INPUTS', 'EMAIL_ALREADY_EXIST',
+    'EMAIL_NOT_EXIST', 'WRONG_PASSWORD'
+],
+
+serverErrObj = {
+    code: -1,
+    reason: 'SERVER_ERROR'
+};
 
 exports.signup = function(req, callback) {
     var user = handleData(req);
@@ -37,15 +38,24 @@ exports.signup = function(req, callback) {
                     return;
                 }
 
-                user.uid = buildUid();
-                user.password = encrypt(user.password);
+                var uniqueCode = buildUniqueCode();
+                var uid = buildUid();
+                var broswers = {};
+                broswers[uniqueCode] = user.ua;
 
-                collection.insert(user, function(err, results) {
+                collection.insert({
+                    email: user.email,
+                    uid: uid,
+                    password: encrypt(user.password),
+                    broswers: broswers
+
+                }, function(err, results) {
                     if (err) { throw err; }
 
                     response({
                         code: 0,
-                        uid: user.uid
+                        uid: uid,
+                        uniqueCode: uniqueCode
                     }, callback);
 
                     log('user has been saved: ' + user.email);
@@ -103,6 +113,11 @@ exports.login = function(req, callback) {
     }
 };
 
+// TODO logout
+exports.logout = function(req, callback) {
+    callback(0, {});
+};
+
 // 初始化用户参数并校验
 function handleData(req) {
     var body = req.body,
@@ -111,7 +126,8 @@ function handleData(req) {
     return {
         email : body['email'],
         password : body['password'],
-        ua : headers['x-wonder-user-agent']
+        ua : headers['x-wonder-user-agent'],
+        uniqueCode: body['uniqueCode'] || ''
     };
 }
 
@@ -120,7 +136,8 @@ function response(obj, callback) {
     callback('', {
         code: obj.code,
         reason: ERROR_DESCRIPTIONS[obj.code],
-        uid: obj.uid || ''
+        uid: obj.uid || '',
+        uniqueCode: obj.uniqueCode || ''
     });
 } 
 // 校验用户参数
@@ -146,9 +163,21 @@ function buildUid() {
     return dateStr + randomStr;
 }
 
+// 生成唯一码
+function buildUniqueCode() {
+    var totalLength = 16,
+    dateStr = new Date().getTime().toString(16),
+    randomStr = Math.floor(
+        (1 + Math.random()) *
+        Math.pow(16, (totalLength - dateStr.length))
+    ).toString(16);
+
+    return encrypt(dateStr + randomStr, 'MD5');
+}
+
 // 加密
-function encrypt(pw) {
-    var hmac = crypto.createHash('sha256');
+function encrypt(pw, type) {
+    var hmac = type ? crypto.createHash(type) : crypto.createHash('sha256');
     hmac.update(pw);
     return hmac.digest('hex');
 }

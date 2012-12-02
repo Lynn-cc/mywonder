@@ -181,14 +181,17 @@
             }
         },
         signup: function(email, password) {
-            signup(email, password, {
+            signup({
+                email: email,
+                password: password
+            }, {
                 success: function(data) {
                     if (data.code === 0) {
                         alert('注册成功');
                         userInfo.set({
                             uid: data.uid,
                             email: email,
-                            UniqueCode: data.uniqueCode
+                            uniqueCode: data.uniqueCode
                         }, function() {
                             global.reset();
                             global.switchLoginStatus(email);
@@ -205,32 +208,41 @@
             });
         },
         login: function(email, password) {
-            login(email, password, {
-                success: function(data, text) {
-                    if (data.code === 0) {
-                        alert('登陆成功');
-                        global.reset();
-                        userInfo.set({
-                            uid: data.uid,
-                            email: email,
-                            UniqueCode: data.uniqueCode
-                        });
-                        global.switchLoginStatus(email);
-                    } else {
-                        alert('错误' + data.code + ': ' + data.reason);
-                    }
-                    global.sendStatus = 0;
-                },
-                error: function(jqXHR, textStatus, errorThrown) {
-                    alert(textStatus + ':' + errorThrown);
+            userInfo.get('uniqueCode', function(obj) {
+                login({
+                    email: email,
+                    password: password,
+                    uniqueCode: obj.uniqueCode || ''
+                }, {
+                    success: function(data, text) {
+                        if (data.code === 0) {
+                            alert('登陆成功');
+                            global.reset();
+                            userInfo.set({
+                                uid: data.uid,
+                                email: email,
+                                UniqueCode: obj || data.uniqueCode
+                            });
+                            global.switchLoginStatus(email);
+                        } else {
+                            alert('错误' + data.code + ': ' + data.reason);
+                        }
+                        global.sendStatus = 0;
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        alert(textStatus + ':' + errorThrown);
 
-                    global.sendStatus = 0;
-                }
+                        global.sendStatus = 0;
+                    }
+                });
             });
         },
         logout: function() {
             userInfo.get(null, function(obj) {
-                logout(obj.uid, obj.uniqueCode, {
+                logout({
+                    uid: obj.uid,
+                    uniqueCode: obj.uniqueCode || ''
+                }, {
                     success: function() {
                         userInfo.clear();
                         alert('注销成功');
@@ -254,4 +266,5 @@
     };
 
 })();
+
 
