@@ -211,8 +211,7 @@
             userInfo.get('uniqueCode', function(obj) {
                 login({
                     email: email,
-                    password: password,
-                    uniqueCode: obj.uniqueCode || ''
+                    password: password
                 }, {
                     success: function(data, text) {
                         if (data.code === 0) {
@@ -221,7 +220,7 @@
                             userInfo.set({
                                 uid: data.uid,
                                 email: email,
-                                UniqueCode: obj || data.uniqueCode
+                                UniqueCode: data.uniqueCode
                             });
                             global.switchLoginStatus(email);
                         } else {

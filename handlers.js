@@ -4,7 +4,7 @@ log = require('./log.js').log,
 logType = require('./log.js').types,
 
 ERROR_DESCRIPTIONS = ['', 'INVALID_INPUTS', 'EMAIL_ALREADY_EXIST',
-    'EMAIL_NOT_EXIST', 'WRONG_PASSWORD'
+    'EMAIL_NOT_EXIST', 'WRONG_PASSWORD', 'UNEXPECTED_ERROR'
 ],
 
 serverErrObj = {
@@ -26,13 +26,13 @@ exports.signup = function(req, callback) {
 
             if (err) { throw err; }
 
-            collection.find({
+            collection.findOne({
                 email: user.email
-            }).toArray(function(err, item) {
+            }, function(err, item) {
 
                 if (err) { throw err; }
 
-                if (item.length) {
+                if (item) {
                     log(logType.WARNING, 'user is already exits: ' + user.email);
                     response({ code : 2 }, callback);
                     return;
@@ -83,26 +83,38 @@ exports.login = function(req, callback) {
 
             if (err) { throw err; }
 
-            collection.find({
+            collection.findOne({
                 email: user.email
-            }).toArray(function(err, item) {
+            }, function(err, item) {
+                var uniqueCode,
+                newBroswer = item.broswers;
                 if (err) { throw err; }
 
-                if (!item.length) {
+                if (!item) {
                     log(logType.WARNING, 'user not exist:' + user.email);
                     response({ code : 3 }, callback);
                     return;
                 }
 
-                if (encrypt(user.password) === item[0].password) {
-                    log('login success' + item[0].email);
+                if (encrypt(user.password) === item.password) {
+                    log('login success' + item.email);
+                    uniqueCode = buildUniqueCode();
+                    newBroswer[uniqueCode] = user.ua;
+                    collection.update({
+                        email: user.email
+                    }, {
+                        $set: {
+                            broswers: newBroswer
+                        }
+                    });
                     response({
                         code: 0,
-                        uid: item[0].uid
+                        uid: item.uid,
+                        uniqueCode: uniqueCode
                     }, callback);
                 } else {
                     log(logType.WARNING,
-                        'wrong password:' + item[0].email);
+                        'wrong password:' + item.email);
                         response({ code: 4 }, callback);
                 }
             });
@@ -113,8 +125,45 @@ exports.login = function(req, callback) {
     }
 };
 
-// TODO logout
 exports.logout = function(req, callback) {
+    var user = handleData(req);
+    try {
+        db.collection('user', function(err, collection) {
+            if (err) { throw err; }
+
+            collection.findOne({
+                uid: user.uid
+            }, function(err, item) {
+                var newBroswer;
+                if (err) { throw err; }
+                if (!item) {
+                    response({
+                        code: 5
+                    }, callback);
+                }
+                newBroswer = item.broswers;
+
+                if (newBroswer[user.uniqueCode]) {
+                    delete newBroswer[user.uniqueCode];
+                    collection.update({
+                        uid: user.uid
+                    }, {
+                        $set: {
+                            broswers: newBroswer
+                        }
+                    });
+                } else {
+                    response({
+                        code: 5
+                    }, callback);
+                }
+            });
+        });
+
+    } catch(e) {
+        log(logType.ERROR, e);
+        callback(e, serverErrObj);
+    }
     callback(0, {});
 };
 
@@ -124,10 +173,11 @@ function handleData(req) {
     headers = req.headers;
 
     return {
-        email : body['email'],
-        password : body['password'],
+        email : body['email'] || '',
+        password : body['password'] || '',
         ua : headers['x-wonder-user-agent'],
-        uniqueCode: body['uniqueCode'] || ''
+        uniqueCode: body['uniqueCode'] || '',
+        uid: body['uid'] || ''
     };
 }
 
