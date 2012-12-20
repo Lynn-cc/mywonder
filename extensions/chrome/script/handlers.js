@@ -11,15 +11,34 @@ function openOptionPage(callback) {
     });
 }
 
-function syncBookmarks(callback) {
+function sync(callbacks) {
     chrome.bookmarks.getTree(function(data) {
-        network.sendBookmarks(data, callback);
+        userInfo.get(null, function(obj) {
+            network.sync({
+                bookmarks: data || '',
+                uid: obj.uid || '',
+                uniqueCode: obj.uniqueCode || ''
+            }, callbacks);
+        });
     });
 }
 
 function getAppName() {
     return 'Chrome';
 }
+
+var userInfo = new function() {
+    var storage = chrome.storage.local;
+    this.set = function(arg1, arg2) {
+        storage.set(arg1, arg2);
+    };
+    this.get = function(arg1, arg2) {
+        storage.get(arg1, arg2);
+    };
+    this.clear = function(arg1) {
+        storage.clear(arg1);
+    };
+}();
 
 chrome.bookmarks.onRemoved.addListener(function(id, obj) {
     console.log('onRemoved id is:' + id);

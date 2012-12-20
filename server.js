@@ -59,4 +59,18 @@ app.post('/logout', function(req, res) {
     });
 });
 
+app.post('/sync', function(req, res) {
+    log('accepted request of /sync');
+
+    handlers.sync(req, function(err, results) {
+        if (err) {
+            res.json(500, results);
+            log('response status code 500');
+        } else {
+            res.json(200, results);
+            log('sended response of /sync')
+        }
+    });
+});
+
 

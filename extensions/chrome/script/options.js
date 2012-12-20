@@ -220,7 +220,7 @@
                             userInfo.set({
                                 uid: data.uid,
                                 email: email,
-                                UniqueCode: data.uniqueCode
+                                uniqueCode: data.uniqueCode
                             });
                             global.switchLoginStatus(email);
                         } else {

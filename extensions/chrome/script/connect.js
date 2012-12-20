@@ -14,17 +14,6 @@ var login = background.network.login;
 
 var logout = background.network.logout;
 
-var userInfo = new function() {
-    var storage = chrome.storage.local;
-    this.set = function(arg1, arg2) {
-        storage.set(arg1, arg2);
-    };
-    this.get = function(arg1, arg2) {
-        storage.get(arg1, arg2);
-    };
-    this.clear = function(arg1) {
-        storage.clear(arg1);
-    };
-}();
+var sync = background.network.sync;
 
-
+var userInfo = background.userInfo;

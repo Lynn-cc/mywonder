@@ -7,6 +7,11 @@ li {
 }
 
 .waiting {
-    background:#CCC url(../image/waiting.gif) 10px 60% no-repeat;
-    cursor:default;
+    background: #CCC url(../image/waiting.gif) 10px 60% no-repeat;
+    cursor: default;
+}
+
+.failed {
+    cursor: pointer;
+    background: #F2CA50;
 }

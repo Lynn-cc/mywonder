@@ -1,4 +1,4 @@
-var typeStr = ['INFO   ', 'ERROR  ', 'WARNING', 'DEBUG  '];
+var typeStr = ['  INFO ', ' ERROR ', 'WARNING', ' DEBUG '];
 
 exports.types = {
     INFO : 0,
